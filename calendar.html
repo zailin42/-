@@ -1,0 +1,123 @@
+﻿<link href="./calendar.css" type="text/css" rel="stylesheet">
+<div id="calendar"></div>
+<script>
+	function config(){
+		document.title = "Calendar";
+		document.characterSet = "utf-8";
+	}
+
+	// Get Date Information
+	function time(){
+		const weekName = ['일','월','화','수','목','금','토'];
+
+		const day = new Date();
+		let year = day.getFullYear();
+		const days = day.getDate();
+		let month = day.getMonth()+1;
+		const week = day.getDay();
+		const firstDayWeek = new Date(`${year}-${month}-1`).getDay();
+
+		return [year,month,firstDayWeek];
+	}
+
+	// Get The Number of days of Current Month
+	function monthDays(year,month){
+		if(month == 0) month = 12;
+		const days = [30,31];
+		const leafYear = (year%4 == 0 || (year%100 == 0 && year%400 == 0));
+		
+		if(month == 2 && leafYear) return 29;
+		else if(month == 2) return 28;
+		else if(month <= 7) return days[month%2];
+		else return days[(month+1)%2];
+	}
+
+	// Write the basic Data
+	function write(data){
+		let div = document.querySelector("#calendar");
+		let year = "<select id='year'>";
+		let month = "<select id='month'>";
+		let week = `<ul id='week'>
+						<li>Sun</li>
+						<li>Mon</li>
+						<li>Tue</li>
+						<li>Wen</li>
+						<li>Thr</li>
+						<li>Fri</li>
+						<li>Sat</li>
+					</ul>`;
+		let coments = "<ul id='days'>";
+
+		for(i=(monthDays(data[0],data[1]-1)-data[2]+1);i<=monthDays(data[0],data[1]-1);i++)
+			coments += `<li class='lastMonth'>${i}</li>`;
+
+		for(i=1;i<=monthDays(data[0],data[1]);i++)
+			coments += `<li`+(i%7-(7-data[2]) == 1 ? " class='sun'" : i%7-(7-data[2]) == 0 ? " class='sat'" : "")+`>${i}</li>`;
+		
+		for(i=1;i<=12;i++)
+			month += "<option id='month'"+(i==data[1] ? " selected" : "")+">"+i+"월</option>";
+		
+		for(i=(data[0]-50);i<=(data[0]+50);i++)
+			year += "<option id='year'"+(i==data[0] ? " selected" : "")+">"+i+"년</option>";
+            
+
+		coments += "</ul>";
+		year += "</select>";
+		month += "</select>";
+
+		div.innerHTML = year;
+		div.innerHTML += month;
+		div.innerHTML += week;
+		div.innerHTML += coments;
+	}
+
+	function getWeek(year,month){
+		return new Date(`${year}-${month}-1`).getDay();
+	}
+
+	// When the Month be changed
+	function changeMonth(year,me){
+		let coments = "";
+
+		for(i=(monthDays(year,me-1)-getWeek(year,me)+1);i<=monthDays(year,me-1);i++)
+			coments += `<li class='lastMonth'>${i}</li>`;
+
+		for(i=1;i<=monthDays(year,me);i++)
+			coments += `<li`+(i%7-(7-getWeek(year,me)) == 1 ? " class='sun'" : i%7-(7-getWeek(year,me)) == 0 ? " class='sat'" : "")+`>${i}</li>`;
+
+		let ul = document.querySelector("#days");
+		ul.innerHTML = coments;
+	}
+
+	// When the year be changed
+	function changeYear(month,me){
+		let coments = "";
+
+		for(i=(monthDays(me,month-1)-getWeek(me,month)+1);i<=monthDays(me,month-1);i++)
+			coments += `<li class='lastMonth'>${i}</li>`;
+
+		for(i=1;i<=monthDays(me,month);i++)
+			coments += `<li`+(i%7-(7-getWeek(me,month)) == 1 ? " class='sun'" : i%7-(7-getWeek(me,month)) == 0 ? " class='sat'" : "")+`>${i}</li>`;
+
+		let ul = document.querySelector("#days");
+		ul.innerHTML = coments;
+	}
+
+	function makeEvent(data){
+		let month = document.querySelector("#month");
+		let year = document.querySelector("#year");
+
+		month.addEventListener("click",function(){changeMonth(year.selectedIndex+1969,this.selectedIndex+1)});
+		year.addEventListener("click",function(){changeYear(month.selectedIndex+1,this.selectedIndex+1969)});
+	}
+
+	function init(){
+		config();
+
+		const calendar = time();
+		write(calendar);
+		makeEvent(calendar);
+	}
+
+	init();
+</script>

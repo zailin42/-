@@ -1,0 +1,10 @@
+*{margin:0;padding:0;list-style:none;}
+body{background:#F5F1E9;}
+#calendar{width:500px;height:500px;margin:100px auto;}
+#calendar > select{width:100px;height:50px;font-size:25px;background:#428bca;color:#fff;}
+#calendar > ul > li{float:left;width:70px;height:70px;text-align:center;background:#fff;}
+#calendar > #week > li{height:30px;color:#007cff;line-height:30px;}
+#calendar > #days > li{line-height:70px;}
+#calendar > #days > li.lastMonth{color:#777;}
+li.sun{color:red;}
+li.sat{color:blue;}
